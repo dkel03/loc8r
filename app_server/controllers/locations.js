@@ -66,15 +66,15 @@ const locationInfo = (req, res) => {
         ],
         reviews: [
           {
-            author: 'Simon Holmes',
+            author: ' SeungHa Song ',
             rating: 5,
-            timestamp: '16 July 2013',
+            timestamp: '17 July 2019',
             reviewText: 'What a great place. I can\'t say enough good things about it.'
           },
           {
-            author: 'Charlie Chaplin',
+            author: ' SuChan Oh ',
             rating: 3,
-            timestamp: '16 June 2013',
+            timestamp: '16 June 2019',
             reviewText: 'It was okay. Coffee wasn\'t great, but the wifi was fast.'
           }
         ]
