@@ -1,5 +1,14 @@
+const request = require("request");
+const apiOptions = {
+	server: 'http://localhost:3000'
+};
+if (process.env.NODE_ENV === 'production') {
+	apiOptions.server = 'http://loc8r-application.herokuapp.com';
+	// production 즉 deploy했을 때 내 경로를 지정해주는 것임!!
+}
+
 /* GET 'home' page */
-const homelist = (req, res) => {
+const renderHomepage = (req, res, requestbody) => {
 	res.render('location-list', { 
 		title: 'Loc8r - find a place to wrork with wifi',
 		pageHeader: {
@@ -7,26 +16,28 @@ const homelist = (req, res) => {
 			strapline: 'Find places to work with wifi near you!'
 		},
 		sidebar: "Looking for wifi and a seat? Loc8r helps you find places to work when out and about. Perhaps with coffee, cake or a pint? Let Loc8r help you find the place you're looking for",
-		locations: [{
-			name: 'Starcups',
-			address:'125 High Street, Reading, RG6 1PS',
-			rating: 3,
-			facilities: ['Hot drinks', 'Food', 'Premium wifi'],
-			distance: '100m'
-		},{
-			name: 'Cafe Hero',
-			address:'125 High Street, Reading, RG6 1PS',
-			rating: 4,
-			facilities: ['Hot drinks', 'Food', 'Premium wifi'],
-			distance: '200m'
-		},{
-			name: 'Beer Queen',
-			address:'125 High Street, Reading, RG6 1PS',
-			rating: 2,
-			facilities: ['Food', 'Premium wifi'],
-			distance: '250m'
-		}]
+		locations: requestbody
 	});	
+};
+
+const homelist = (req, res) => {
+	const path = '/api/locations';
+	const requestOptions = {
+		url: `${apiOptions.server}${path}`,
+		method: 'GET',
+		json: {},
+		qs: {
+			lng: -0.7992599,
+			lat: 51.378091,
+			maxDistance: 20
+		}
+	};
+	request(
+		requestOptions,
+		(err, response, body) => {
+			renderHomepage(req, res, body);	
+		}
+	);
 };
 
 /* GET 'Location info' page */
