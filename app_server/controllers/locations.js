@@ -7,8 +7,31 @@ if (process.env.NODE_ENV === 'production') {
 	// production 즉 deploy했을 때 내 경로를 지정해주는 것임!!
 }
 
+
 /* GET 'home' page */
-const renderHomepage = (req, res, requestbody) => {
+const formatDistance = (distance) => {
+	let thisDistance = 0;
+	let unit = 'm';
+	if (distance > 1000) {
+		thisDistance = parseFloat(distance / 1000).toFixed(1);
+		unit = 'km';
+	} else {
+		thisDistance = Math.floor(distance);
+	}
+	return thisDistance + unit;
+};
+
+const renderHomepage = (req, res, responseBody) => {
+ 	let message = null;
+ 	if (!(responseBody instanceof Array)) {
+		message = 'API lookup error';
+		responseBody = [];
+ 	} 
+	else {
+		if (!responseBody.length) {
+		  message = 'No places found nearby';
+		}
+	}
 	res.render('location-list', { 
 		title: 'Loc8r - find a place to wrork with wifi',
 		pageHeader: {
@@ -16,7 +39,8 @@ const renderHomepage = (req, res, requestbody) => {
 			strapline: 'Find places to work with wifi near you!'
 		},
 		sidebar: "Looking for wifi and a seat? Loc8r helps you find places to work when out and about. Perhaps with coffee, cake or a pint? Let Loc8r help you find the place you're looking for",
-		locations: requestbody
+		locations: responseBody,
+		message
 	});	
 };
 
@@ -34,8 +58,15 @@ const homelist = (req, res) => {
 	};
 	request(
 		requestOptions,
-		(err, response, body) => {
-			renderHomepage(req, res, body);	
+		(err, {statusCode}, body) => {
+			let data = [];
+			if (statusCode === 200 && body.length){	// 의미없는 for문 방지위한 if문
+				data = body.map( (item) => {
+					item.distance = formatDistance(item.distance);
+					return item;
+				});
+			}
+			renderHomepage(req, res, data);	
 		}
 	);
 };
